@@ -15,7 +15,7 @@
 
 
 <html class="theme-next gemini use-motion" lang="zh-TW">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -447,7 +447,6 @@
 <li>首先，先到Oracle DB進行查詢，確認你的資料庫支持哪些時區：</li>
 </ol>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> tzname, tzabbrev <span class="keyword">from</span> v$timezone_names</span><br></pre></td></tr></table></figure>
-
 <p>看到裡面有Asia/Shanghai CST這個似乎Ubuntu Server也支持的。</p>
 <ol start="2">
 <li><p>設定Ubuntu Server 時區</p>
@@ -463,24 +462,19 @@
 </ol>
 <h2 id="坑-2-執行ClosedXML缺少依賴的包"><a href="#坑-2-執行ClosedXML缺少依賴的包" class="headerlink" title="坑#2 執行ClosedXML缺少依賴的包"></a>坑#2 執行ClosedXML缺少依賴的包</h2><p> ClosedXML在進行SaveAs()命令時找不到引用的包，報錯如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">System.TypeInitializationException: The type initializer for &apos;Gdip&apos; threw an exception. ---&gt; System.DllNotFoundException: Unable to load shared library &apos;libdl&apos; or one of its dependencies. In order to help diagnose loading problems, consider setting the LD_DEBUG environment variable: liblibdl: cannot open shared object file: No such file or directory</span><br><span class="line">   at Interop.Libdl.dlopen(String fileName, Int32 flag)</span><br><span class="line">   at System.Drawing.SafeNativeMethods.Gdip.LoadNativeLibrary()</span><br><span class="line">   at System.Drawing.SafeNativeMethods.Gdip..cctor()</span><br><span class="line">   --- End of inner exception stack trace ---</span><br><span class="line">   at System.Drawing.SafeNativeMethods.Gdip.GdipGetGenericFontFamilySansSerif(IntPtr&amp; fontfamily)</span><br><span class="line">   at System.Drawing.FontFamily.GetGdipGenericSansSerif()</span><br><span class="line">   at System.Drawing.FontFamily.get_GenericSansSerif()</span><br><span class="line">   at System.Drawing.Font.CreateFont(String familyName, Single emSize, FontStyle style, GraphicsUnit unit, Byte charSet, Boolean isVertical)</span><br><span class="line">   at ClosedXML.Excel.FontBaseExtensions.GetCachedFont(IXLFontBase fontBase, Dictionary`2 fontCache)</span><br><span class="line">   at ClosedXML.Excel.FontBaseExtensions.GetWidth(IXLFontBase fontBase, String text, Dictionary`2 fontCache)</span><br><span class="line">   at ClosedXML.Excel.XLColumn.AdjustToContents(Int32 startRow, Int32 endRow, Double minWidth, Double maxWidth)</span><br><span class="line">   at ClosedXML.Excel.XLColumns.&lt;&gt;c.&lt;AdjustToContents&gt;b__8_0(XLColumn c)</span><br><span class="line">   at System.Collections.Generic.List`1.ForEach(Action`1 action)</span><br><span class="line">   at ClosedXML.Excel.XLColumns.AdjustToContents()</span><br><span class="line">   at WebReporter.Programs.YG666.ReportGeneral(String shipNumber) in E:\Git\VS2019\WebReporter\WebReporter\Programs\YG666.cs:line 174</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>這裡有個奇怪的問題，明明是在Linux機器上執行，為什麼報錯會有Windows路徑呢？麻煩好心人士私下跟我說一下，謝謝。</p>
 </blockquote>
 <p>這個問題花了我比較長的時間，中文資料沒有能夠解決，最後參考這一篇-<a href="https://github.com/dotnet/dotnet-docker/issues/618" target="_blank" rel="noopener">Can’t use System.Drawing.Common in microsoft/dotnet:runtime · Issue #618 · dotnet/dotnet-docker</a>得到了解決，其中有一個回答是：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apt-get update \</span><br><span class="line">    &amp;&amp; apt-get install -y --allow-unauthenticated \</span><br><span class="line">        libc6-dev \</span><br><span class="line">        libgdiplus \</span><br><span class="line">        libx11-dev \</span><br><span class="line">     &amp;&amp; rm -rf /var/lib/apt/lists/*</span><br></pre></td></tr></table></figure>
-
 <p>這裡似乎有用到C相關，還有Mono相關的庫，尤其最後一個Mono庫應該是關鍵，因為我在進行請求時我進行SSH連線的Xshell竟然彈出X11請求。</p>
 <h2 id="坑-3-Linux路徑問題"><a href="#坑-3-Linux路徑問題" class="headerlink" title="坑#3 Linux路徑問題"></a>坑#3 Linux路徑問題</h2><p>因為程式中有需要進行本機文件的處理，所以有一些路徑拼接的部分，這裡需要注意Windos的路徑一般是這樣的：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\Git\VS2019\WebReporter</span><br></pre></td></tr></table></figure>
-
 <p>而Linux一般是這樣的：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/nginx/sites-available/default</span><br></pre></td></tr></table></figure>
-
 <p>注意到了嗎？斜杠的方向不同，但是Windows在某些情況下似乎並不嚴格要求，兩種都可以用，Linux下對於”\“就會顯示找不到了，所以在程式中需要注意針對不同的作業系統進行判斷。</p>
 <p>By the way…我在程式中一般是這樣判斷的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">using System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line">if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))&#123;</span><br><span class="line">	Global.ExcelWritingPath = @&quot;E:\TempData\WebReporter\&quot;;</span><br><span class="line">	Global.ExcelTemplatePath = $@&quot;		&#123;Directory.GetCurrentDirectory()&#125;\wwwroot\ExcelTamplate\&quot;;</span><br><span class="line">&#125; else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))&#123;</span><br><span class="line">	Global.ExcelWritingPath = @&quot;/tmp/WebReporter/ExcelProcess/&quot;;</span><br><span class="line">	Global.ExcelTemplatePath = $@&quot;&#123;Directory.GetCurrentDirectory()&#125;/wwwroot/ExcelTamplate/&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h1 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h1><p>整體而言還是很順利的，大概花了4個小時全部搞定這些問題，記錄一下希望可以幫助到需要的人。</p>
 
           
@@ -638,16 +632,12 @@
           
             <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
 <h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
 <h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
           
