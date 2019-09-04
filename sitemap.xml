@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://ren.roey.xyz/about/link.html</loc>
+    
+    <lastmod>2019-09-04T03:08:16.848Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://ren.roey.xyz/2019/08/29/ASP.NET%20Core%20MVC%E7%B3%BB%E7%B5%B1%E4%BA%A4%E6%8E%A5%E6%96%87%E4%BB%B6/</loc>
     
     <lastmod>2019-08-29T01:28:37.703Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>http://ren.roey.xyz/2019/04/04/hello-world/</loc>
     
     <lastmod>2019-08-07T09:01:00.780Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://ren.roey.xyz/about/link.html</loc>
-    
-    <lastmod>2019-05-02T03:53:56.000Z</lastmod>
     
   </url>
   
